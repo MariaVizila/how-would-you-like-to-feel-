@@ -4,88 +4,87 @@
 
 const mainScreen = document.getElementById("mainScreen");
 
-const calmButton = document.getElementById("calmButton");
-const nonchalantButton = document.getElementById("nonchalantButton");
+
+/* =========================
+   CALM RESPONSES
+========================= */
+
+const calmResponses = {
+
+  Sad: {
+    title: "You're feeling sad.",
+    message:
+      "Give yourself a moment. It's okay to feel sad. Take a few slow breaths, relax your shoulders, and focus on getting through one moment at a time."
+  },
+
+  Depressed: {
+    title: "You're feeling depressed.",
+    message:
+      "You don't have to fix everything at once. Try focusing on one small thing you can do right now, such as getting some water, sitting somewhere comfortable, or talking to someone you trust."
+  },
+
+  Mad: {
+    title: "You're feeling mad.",
+    message:
+      "Pause before reacting. Take a few slow breaths and give yourself some space from whatever is making you angry. You can decide what to do after you've had a moment to cool down."
+  },
+
+  Annoyed: {
+    title: "You're feeling annoyed.",
+    message:
+      "Take a step back from the situation if you can. A short pause can make it easier to decide whether something is worth your attention."
+  }
+
+};
 
 
 /* =========================
-   CALM
+   NONCHALANT TIPS
 ========================= */
 
-calmButton.addEventListener("click", () => {
+const nonchalantTips = [
 
-  mainScreen.innerHTML = `
-    <h1>What emotion are you feeling?</h1>
+  "Take a moment before responding.",
 
-    <p class="subtitle">
-      Choose the option that best describes how you feel.
-    </p>
+  "You don't have to react to everything.",
 
-    <div class="buttons">
+  "Keep your responses simple.",
 
-      <button class="choice-button emotion-button">
-        Sad
-      </button>
+  "Stay focused on what you're doing.",
 
-      <button class="choice-button emotion-button">
-        Depressed
-      </button>
+  "Don't rush to explain yourself.",
 
-      <button class="choice-button emotion-button">
-        Mad
-      </button>
+  "Listen before you respond.",
 
-      <button class="choice-button emotion-button">
-        Annoyed
-      </button>
+  "Keep your tone relaxed.",
 
-    </div>
+  "Let small things go when they aren't worth your energy.",
 
-    <button class="back-button" id="backButton">
-      ← Back
-    </button>
-  `;
+  "You don't always need the last word.",
 
-  document
-    .getElementById("backButton")
-    .addEventListener("click", showMainScreen);
+  "Pause instead of immediately reacting.",
 
-});
+  "Stay comfortable with silence.",
 
+  "Don't let someone else's reaction control yours.",
 
-/* =========================
-   NONCHALANT
-========================= */
+  "Think first, then respond.",
 
-nonchalantButton.addEventListener("click", () => {
+  "Keep your attention on what actually matters.",
 
-  mainScreen.innerHTML = `
-    <h1>Nonchalant</h1>
+  "Not every situation needs a big response.",
 
-    <p class="subtitle">
-      Stay relaxed. Don't overreact.
-    </p>
+  "Stay relaxed when plans change.",
 
-    <div class="tip-container">
+  "Avoid turning a small issue into a bigger one.",
 
-      <p id="tipText">
-        Loading tip...
-      </p>
+  "Be confident without needing to prove yourself.",
 
-    </div>
+  "If something isn't important, don't give it unnecessary attention.",
 
-    <button class="back-button" id="backButton">
-      ← Back
-    </button>
-  `;
+  "Keep doing what you were already doing."
 
-  startNonchalantTips();
-
-  document
-    .getElementById("backButton")
-    .addEventListener("click", showMainScreen);
-
-});
+];
 
 
 /* =========================
@@ -143,19 +142,19 @@ function showCalm() {
 
     <div class="buttons">
 
-      <button class="choice-button emotion-button">
+      <button class="choice-button emotion-button" data-emotion="Sad">
         Sad
       </button>
 
-      <button class="choice-button emotion-button">
+      <button class="choice-button emotion-button" data-emotion="Depressed">
         Depressed
       </button>
 
-      <button class="choice-button emotion-button">
+      <button class="choice-button emotion-button" data-emotion="Mad">
         Mad
       </button>
 
-      <button class="choice-button emotion-button">
+      <button class="choice-button emotion-button" data-emotion="Annoyed">
         Annoyed
       </button>
 
@@ -166,8 +165,58 @@ function showCalm() {
     </button>
   `;
 
+  document.querySelectorAll(".emotion-button").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const emotion = button.dataset.emotion;
+
+      showCalmResponse(emotion);
+
+    });
+
+  });
+
   document
     .getElementById("backButton")
+    .addEventListener("click", showMainScreen);
+}
+
+
+/* =========================
+   CALM RESPONSE
+========================= */
+
+function showCalmResponse(emotion) {
+
+  const response = calmResponses[emotion];
+
+  mainScreen.innerHTML = `
+    <h1>${response.title}</h1>
+
+    <div class="response-container">
+
+      <p class="response-text">
+        ${response.message}
+      </p>
+
+    </div>
+
+    <button class="back-button" id="emotionBackButton">
+      ← Choose another emotion
+    </button>
+
+    <button class="back-button" id="homeButton">
+      ← Start over
+    </button>
+  `;
+
+  document
+    .getElementById("emotionBackButton")
+    .addEventListener("click", showCalm);
+
+  document
+    .getElementById("homeButton")
     .addEventListener("click", showMainScreen);
 }
 
@@ -182,7 +231,7 @@ function showNonchalant() {
     <h1>Nonchalant</h1>
 
     <p class="subtitle">
-      Stay relaxed. Don't overreact.
+      Here are 5 tips for staying relaxed.
     </p>
 
     <div class="tip-container">
@@ -207,25 +256,50 @@ function showNonchalant() {
 
 
 /* =========================
-   NONCHALANT TIPS
+   RANDOMIZE TIPS
+========================= */
+
+function shuffleArray(array) {
+
+  const shuffled = [...array];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+
+    const randomIndex =
+      Math.floor(Math.random() * (i + 1));
+
+    [
+      shuffled[i],
+      shuffled[randomIndex]
+    ] =
+    [
+      shuffled[randomIndex],
+      shuffled[i]
+    ];
+  }
+
+  return shuffled;
+}
+
+
+/* =========================
+   SHOW 5 DIFFERENT TIPS
 ========================= */
 
 function startNonchalantTips() {
 
-  const tips = [
-    "Take a moment before responding.",
-    "You don't have to react to everything.",
-    "Keep your responses simple.",
-    "Stay focused on what you're doing.",
-    "Don't rush to explain yourself.",
-    "Listen before you respond.",
-    "Keep your tone relaxed.",
-    "It's okay to let small things go."
-  ];
+  const tipText =
+    document.getElementById("tipText");
 
-  let tipIndex = Math.floor(Math.random() * tips.length);
+  /*
+   * Pick 5 unique tips for this session.
+   */
 
-  const tipText = document.getElementById("tipText");
+  const selectedTips =
+    shuffleArray(nonchalantTips).slice(0, 5);
+
+  let tipIndex = 0;
+
 
   function showTip() {
 
@@ -233,21 +307,44 @@ function startNonchalantTips() {
 
     setTimeout(() => {
 
-      tipText.textContent = tips[tipIndex];
+      tipText.textContent =
+        selectedTips[tipIndex];
 
       tipText.classList.add("tip-visible");
 
       tipIndex++;
 
-      if (tipIndex >= tips.length) {
-        tipIndex = 0;
-      }
-
     }, 250);
 
   }
 
+
   showTip();
 
-  setInterval(showTip, 4000);
+
+  /*
+   * Change the tip every 4 seconds.
+   */
+
+  const tipInterval =
+    setInterval(() => {
+
+      if (tipIndex >= selectedTips.length) {
+
+        clearInterval(tipInterval);
+
+        return;
+
+      }
+
+      showTip();
+
+    }, 4000);
 }
+
+
+/* =========================
+   START APP
+========================= */
+
+showMainScreen();
